@@ -1,0 +1,6 @@
+Library/**
+Temp/**
+obj/**
+*.hg
+*.app
+*.unitypackage

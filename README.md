@@ -5,9 +5,9 @@ In our developing, we always want to save both CPU and GPU. As larger and larger
 Goals
 Our initial goals for this experimental project were:
 Instancing SkinnedMeshRenderer 
-Implement mostly animation features *1
+Implement mostly animation features
 LOD
-Support mobile platform *2
+Support mobile platform
 Culling
 
 Not all goals were reached due to time constraints. However, we felt that the experiment was a success in that parts of the vision proved out. Let’s dig into some of the details.
