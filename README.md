@@ -1,6 +1,5 @@
 
-# Motivation
-In our developing, we always want to save both CPU and GPU. As larger and larger scenes, more and more characters, the cost rises faster and faster. We often implement outdoors scene with GPU Instancing, such as grasses and trees. But for SkinnedMeshRenderer(for example characters), we can’t use instancing. Because the skinning is calculated on CPU, and submitted to GPU one by one. In case there are lots of SkinnedMeshRenderer in the scene, there are lots of Drawcalls and animation calculations. The case is usually occurred in our developing. This technique, Animation Instancing, is designed to instance Characters. 
+As developers, we’re always aware of performance, both in terms of CPU and GPU. Maintaining good performance gets more challenging as scenes get larger and more complex, especially as we add more and more characters. Me and my colleague in Shanghai come across this problem often when helping customers, so we decided to dedicate a few weeks to a project aimed to improve performance when instancing characters. We call the resulting technique Animation Instancing.
 > It needs at least Unity5.4.
 
 # Features:
