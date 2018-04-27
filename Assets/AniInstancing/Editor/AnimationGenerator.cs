@@ -104,7 +104,7 @@ namespace AnimationInstancing
                 generateInfo.RemoveAt(0);
 
                 workingInfo.animator.gameObject.SetActive(true);
-                workingInfo.animator.Play(workingInfo.info.animationNameHash, 0);
+                workingInfo.animator.Play(workingInfo.info.animationNameHash);
                 workingInfo.workingFrame = 0;
                 workingInfo.animator.Update(workingInfo.length / workingInfo.info.totalFrame);
                 return;
@@ -128,6 +128,7 @@ namespace AnimationInstancing
                 EditorUtility.DisplayProgressBar("Generating Animations",
                     string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
                     ((float)(generateCount - generateInfo.Count) / generateCount));
+				//Debug.Log(string.Format("Animation '{0}' is Generating. Current frame is {1}", workingInfo.info.animationName, workingInfo.workingFrame));
                 if (++workingInfo.workingFrame >= workingInfo.info.totalFrame)
                 {
                     aniInfo.Add(workingInfo.info);
@@ -375,8 +376,8 @@ namespace AnimationInstancing
                     //AnimationInstancing script = m_prefab.GetComponent<AnimationInstancing>();
                     for (int i = 0; i < bakeFrames; i += 1)
                     {
-                        float bakeDelta = Mathf.Clamp01(((float)i / bakeFrames));
-                        float animationTime = bakeDelta * animClip.length;
+                        //float bakeDelta = Mathf.Clamp01(((float)i / bakeFrames));
+                        //float animationTime = bakeDelta * animClip.length;
                         //float normalizedTime = animationTime / animClip.length;
 
                         //UnityEditor.Animations.AnimatorController ac = animator.runtimeAnimatorController;
@@ -538,6 +539,7 @@ namespace AnimationInstancing
                 AnimationBakeInfo bake = new AnimationBakeInfo();
                 bake.length = state.state.motion.averageDuration;
                 bake.animator = animator;
+				bake.animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 bake.meshRender = meshRender;
                 bake.layer = layer;
                 bake.info = new AnimationInfo();
