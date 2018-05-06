@@ -141,12 +141,14 @@ namespace AnimationInstancing
                 instancingPackageSize = 1;
                 UseInstancing = false;
             }
+
+			vertexCachePool = new Dictionary<int, VertexCache>();
+			instanceDataPool = new Dictionary<int, InstanceData>();
         }
 
         private void Start()
         {
-            vertexCachePool = new Dictionary<int, VertexCache>();
-            instanceDataPool = new Dictionary<int, InstanceData>();
+            
         }
 
         private void InitializeCullingGroup()
@@ -249,7 +251,7 @@ namespace AnimationInstancing
             Debug.Assert(prefab != null);
             GameObject obj = Instantiate(prefab, Vector3.zero, Quaternion.identity);
             AnimationInstancing script = obj.GetComponent<AnimationInstancing>();
-            script.prefab = prefab;
+            //script.prefab = prefab;
             return obj;
         }
 

@@ -19,12 +19,12 @@ namespace AnimationInstancing
         private Animator animator = null;
         [NonSerialized]
         public Transform worldTransform;
-        public GameObject prefab { get; set; }
+        //public GameObject prefab { get; set; }
+		public GameObject prototype;
         public BoundingSphere boundingSpere;
         public bool visible { get; set; }
         public AnimationInstancing parentInstance { get; set; }
 
-        public string prefabName;
         public float playSpeed = 1.0f;
         [NonSerialized]
         public bool loop = true;
@@ -199,16 +199,18 @@ namespace AnimationInstancing
 
         public bool InitializeAnimation()
         {
-            if (prefab == null)
-                prefab = GameObject.Find(prefabName);
-            Debug.Assert(prefab != null);
-            GameObject thisPrefab = prefab;
+			if(prototype == null) 
+			{
+				Debug.LogError("The prototype is NULL. Please select the prototype first.");
+			}
+			Debug.Assert(prototype != null);
+			GameObject thisPrefab = prototype;
             isMeshRender = false;
             if (lodInfo[0].skinnedMeshRenderer.Length == 0)
             {
                 // This is only a MeshRenderer, it has no animations.
                 isMeshRender = true;
-                AnimationInstancingMgr.Instance.AddMeshVertex(prefab.name,
+				AnimationInstancingMgr.Instance.AddMeshVertex(prototype.name,
                     lodInfo,
                     null,
                     null,
@@ -216,7 +218,7 @@ namespace AnimationInstancing
                 return true;
             }
 
-            AnimationManager.InstanceAnimationInfo info = AnimationManager.Instance.FindAnimationInfo(prefab, this);
+			AnimationManager.InstanceAnimationInfo info = AnimationManager.Instance.FindAnimationInfo(prototype, this);
             if (info != null)
             {
                 aniInfo = info.listAniInfo;
@@ -256,7 +258,7 @@ namespace AnimationInstancing
             }
             
 
-            AnimationInstancingMgr.Instance.AddMeshVertex(prefab.name,
+			AnimationInstancingMgr.Instance.AddMeshVertex(prototype.name,
                 lodInfo,
                 allTransforms,
                 bindPose,
@@ -473,7 +475,7 @@ namespace AnimationInstancing
                 return;
             }
 
-            AnimationInstancingMgr.Instance.AddMeshVertex(attachment.prefab.name,
+			AnimationInstancingMgr.Instance.AddMeshVertex(attachment.prototype.name,
                         attachment.lodInfo,
                         null,
                         null,

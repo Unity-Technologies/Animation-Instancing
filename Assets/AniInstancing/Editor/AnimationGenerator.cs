@@ -254,7 +254,11 @@ namespace AnimationInstancing
                     if (!generateAnims[clipName])
                         continue;
 
-                    AnimationClip clip = clips.Find(q => q.name == clipName);
+					AnimationClip clip = clips.Find(delegate(AnimationClip c) {
+						if (c != null)
+							return c.name == clipName;
+						return false;
+					});
                     int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 0;
                     totalFrames += framesToBake;
                     frames.Add(framesToBake);
@@ -273,7 +277,11 @@ namespace AnimationInstancing
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition);
                 foreach (var clipName in clipNames)
                 {
-                    AnimationClip clip = clips.Find(q => q.name == clipName);
+					AnimationClip clip = clips.Find(delegate(AnimationClip c) {
+						if (c != null)
+							return c.name == clipName;
+						return false;
+					});
                     int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 0;
                     GUILayout.BeginHorizontal();
                     {
@@ -516,7 +524,7 @@ namespace AnimationInstancing
                 Debug.LogError("You should select a prefab with AnimationInstancing component.");
                 return;
             }
-            instance.prefabName = generatedPrefab.name;
+			instance.prototype = generatedPrefab;
 
             for (int i = 0; i != stateMachine.states.Length; ++i)
             {
@@ -715,7 +723,17 @@ namespace AnimationInstancing
             for (int i = 0; i != stateMachine.states.Length; ++i)
             {
                 UnityEditor.Animations.ChildAnimatorState state = stateMachine.states[i];
-                list.Add(state.state.motion as AnimationClip);
+				if (state.state.motion is UnityEditor.Animations.BlendTree)
+				{
+					UnityEditor.Animations.BlendTree blendTree = state.state.motion as UnityEditor.Animations.BlendTree;
+					ChildMotion[] childMotion = blendTree.children;
+					for(int j = 0; j != childMotion.Length; ++j) 
+					{
+						list.Add(childMotion[j].motion as AnimationClip);
+					}
+				}
+				else if (state.state.motion != null)
+                	list.Add(state.state.motion as AnimationClip);
             }
             for (int i = 0; i != stateMachine.stateMachines.Length; ++i)
             {
