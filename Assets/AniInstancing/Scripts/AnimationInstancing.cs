@@ -399,7 +399,7 @@ namespace AnimationInstancing
 
             if (aniEvent == null)
             {
-                float time = curFrame / info.totalFrame;
+                float time = curFrame / info.fps;
                 for (int i = eventIndex >= 0? eventIndex: 0; i < info.eventList.Count; ++i)
                 {
                     if (info.eventList[i].time > time)
@@ -413,7 +413,7 @@ namespace AnimationInstancing
 
             if (aniEvent != null)
             {
-                float time = curFrame / info.totalFrame;
+                float time = curFrame / info.fps;
                 if (aniEvent.time <= time)
                 {
                     gameObject.SendMessage(aniEvent.function, aniEvent);
