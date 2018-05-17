@@ -357,16 +357,42 @@ namespace AnimationInstancing
 
                 AnimationInstancing.LodInfo lod = instance.lodInfo[instance.lodLevel];
 #if USE_CONSTANT_BUFFER
-                VertexCache vertexCache = lod.vertexCacheList[0];
-                InstanceData data = vertexCache.instanceData;
                 int aniTextureIndex = -1;
                 if (instance.parentInstance != null)
                     aniTextureIndex = instance.parentInstance.aniTextureIndex;
                 else
                     aniTextureIndex = instance.aniTextureIndex;
+
+                for (int j = 0; j != lod.vertexCacheList.Length; ++j)
+                {
+                    VertexCache cache = lod.vertexCacheList[j] as VertexCache;
+                    int packageIndex = cache.runtimePackageIndex[aniTextureIndex];
+                    Debug.Assert(packageIndex < cache.packageList[aniTextureIndex].Count);
+                    VertexCache.InstancingPackage package = cache.packageList[aniTextureIndex][packageIndex];
+                    if (package.instancingCount + 1 > instancingPackageSize)
+                    {
+                        ++cache.runtimePackageIndex[aniTextureIndex];
+                        packageIndex = cache.runtimePackageIndex[aniTextureIndex];
+                        if (packageIndex >= cache.packageList[aniTextureIndex].Count)
+                        {
+                            VertexCache.InstancingPackage newPackage = CreatePackage(cache.instanceData,
+                                cache.mesh,
+                                cache.materials,
+                                aniTextureIndex);
+                            cache.packageList[aniTextureIndex].Add(newPackage);
+                            PreparePackageMaterial(newPackage, cache, aniTextureIndex);
+                            newPackage.instancingCount = 1;
+                        }
+                    }
+                    else
+                        ++package.instancingCount;
+                }
+
+                VertexCache vertexCache = lod.vertexCacheList[0];
+                InstanceData data = vertexCache.instanceData;
+                
                 int index = vertexCache.runtimePackageIndex[aniTextureIndex];
                 VertexCache.InstancingPackage pkg = vertexCache.packageList[aniTextureIndex][index];
-                ++pkg.instancingCount;
                 int count = pkg.instancingCount - 1;
                 if (count >= 0)
                 {
@@ -402,28 +428,7 @@ namespace AnimationInstancing
                     boundingSphere[i] = instance.boundingSpere;
                 }
 
-                for (int j = 0; j != lod.vertexCacheList.Length; ++j)
-                {
-                    VertexCache cache = lod.vertexCacheList[j] as VertexCache;
-                    int packageIndex = cache.runtimePackageIndex[aniTextureIndex];
-                    Debug.Assert(packageIndex < cache.packageList[aniTextureIndex].Count);
-                    VertexCache.InstancingPackage package = cache.packageList[aniTextureIndex][packageIndex];
-                    if (package.instancingCount + 1 > instancingPackageSize)
-                    {
-                        ++cache.runtimePackageIndex[aniTextureIndex];
-                        packageIndex = cache.runtimePackageIndex[aniTextureIndex];
-                        if (packageIndex >= cache.packageList[aniTextureIndex].Count)
-                        {
-                            VertexCache.InstancingPackage newPackage = CreatePackage(cache.instanceData,
-                                cache.mesh,
-                                vertexCache.materials, 
-                                aniTextureIndex);
-                            cache.packageList[aniTextureIndex].Add(newPackage);
-                            PreparePackageMaterial(newPackage, cache, aniTextureIndex);
-                            newPackage.instancingCount = 1;
-                        }
-                    }
-                }
+                
 #else
             for (int j = 0; j != lod.vertexCacheList.Length; ++j)
             {
