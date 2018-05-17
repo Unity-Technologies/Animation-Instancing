@@ -193,7 +193,10 @@ namespace AnimationInstancing
                                     package.material[j],
                                     vertexCache.instanceData.worldMatrix[k][i],
                                     package.instancingCount,
-                                    package.propertyBlock);
+                                    package.propertyBlock,
+                                    ShadowCastingMode.On,
+                                    true,
+                                    0);
                             }
                             else
                             {
@@ -208,7 +211,7 @@ namespace AnimationInstancing
 
                         }
 
-                        package.instancingCount = 1;
+                        package.instancingCount = 0;
                     }
                     vertexCache.runtimePackageIndex[k] = 0;
                 }
@@ -363,6 +366,7 @@ namespace AnimationInstancing
                     aniTextureIndex = instance.aniTextureIndex;
                 int index = vertexCache.runtimePackageIndex[aniTextureIndex];
                 VertexCache.InstancingPackage pkg = vertexCache.packageList[aniTextureIndex][index];
+                ++pkg.instancingCount;
                 int count = pkg.instancingCount - 1;
                 if (count >= 0)
                 {
@@ -419,8 +423,6 @@ namespace AnimationInstancing
                             newPackage.instancingCount = 1;
                         }
                     }
-                    else
-                        ++package.instancingCount;
                 }
 #else
             for (int j = 0; j != lod.vertexCacheList.Length; ++j)
