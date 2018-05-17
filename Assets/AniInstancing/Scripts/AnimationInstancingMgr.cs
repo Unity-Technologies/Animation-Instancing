@@ -929,14 +929,14 @@ namespace AnimationInstancing
             UnityEngine.Profiling.Profiler.EndSample();
 
             if (vertexCache.materials == null)
-                vertexCache.materials = render.materials;
+                vertexCache.materials = render.sharedMaterials;
 
 #if USE_CONSTANT_BUFFER
             SetupAdditionalData(vertexCache);
 
             for (int i = 0; i != vertexCache.packageList.Length; ++i)
             {
-                VertexCache.InstancingPackage package = CreatePackage(vertexCache.instanceData, vertexCache.mesh, render.materials, i);
+                VertexCache.InstancingPackage package = CreatePackage(vertexCache.instanceData, vertexCache.mesh, render.sharedMaterials, i);
                 vertexCache.packageList[i].Add(package);
                 PreparePackageMaterial(package, vertexCache, i);
             }
@@ -1021,13 +1021,13 @@ namespace AnimationInstancing
 #endif
 
             if (vertexCache.materials == null)
-                vertexCache.materials = render.materials;
+                vertexCache.materials = render.sharedMaterials;
 
 #if USE_CONSTANT_BUFFER
             SetupAdditionalData(vertexCache);
             for (int i = 0; i != vertexCache.packageList.Length; ++i)
             {
-                VertexCache.InstancingPackage package = CreatePackage(vertexCache.instanceData, vertexCache.mesh, render.materials, i);
+                VertexCache.InstancingPackage package = CreatePackage(vertexCache.instanceData, vertexCache.mesh, render.sharedMaterials, i);
                 vertexCache.packageList[i].Add(package);
                 PreparePackageMaterial(package, vertexCache, i);
             }

@@ -435,10 +435,6 @@ namespace AnimationInstancing
 
         void BakeWithAnimator()
         {
-#if UNITY_ANDROID || UNITY_IPHONE
-        Debug.LogError("You can't bake animations on IOS or Android. Please switch to PC.");
-        return;
-#endif
             if (generatedPrefab != null)
             {
                 generatedObject = Instantiate(generatedPrefab);
