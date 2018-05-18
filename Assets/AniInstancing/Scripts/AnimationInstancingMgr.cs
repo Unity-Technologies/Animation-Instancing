@@ -347,12 +347,15 @@ namespace AnimationInstancing
                 if (instance.aniIndex < 0 && instance.parentInstance == null)
                     continue;
 
-                instance.UpdateAnimation();
-                if (!instance.visible)
-                    continue;
-
                 if (instance.applyRootMotion)
                     ApplyRootMotion(instance);
+
+                instance.UpdateAnimation();
+                instance.boundingSpere.position = instance.transform.position;
+                boundingSphere[i] = instance.boundingSpere;
+
+                if (!instance.visible)
+                    continue;
                 instance.UpdateLod(cameraPosition);
 
                 AnimationInstancing.LodInfo lod = instance.lodInfo[instance.lodLevel];
@@ -421,11 +424,6 @@ namespace AnimationInstancing
                         frameIndex = instance.aniInfo[instance.aniIndex].animationIndex + instance.curFrame;
 
                     data.frameIndex[aniTextureIndex][index][count] = frameIndex;
-
-                    instance.boundingSpere.position.x = worldMat.m03;
-                    instance.boundingSpere.position.y = worldMat.m13;
-                    instance.boundingSpere.position.z = worldMat.m23;
-                    boundingSphere[i] = instance.boundingSpere;
                 }
 
                 
@@ -1043,10 +1041,11 @@ namespace AnimationInstancing
         }
 
 
-        public void AddBoundingSphere(BoundingSphere sphere)
+        public void AddBoundingSphere(AnimationInstancing instance)
         {
-            boundingSphere[usedBoundingSphereCount++] = sphere;
+            boundingSphere[usedBoundingSphereCount++] = instance.boundingSpere;
             cullingGroup.SetBoundingSphereCount(usedBoundingSphereCount);
+            instance.visible = cullingGroup.IsVisible(usedBoundingSphereCount - 1);
         }
 
 

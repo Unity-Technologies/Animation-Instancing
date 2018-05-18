@@ -152,7 +152,7 @@ namespace AnimationInstancing
             }
             visible = true;
             CalcBoundingSphere();
-            AnimationInstancingMgr.Instance.AddBoundingSphere(boundingSpere);
+            AnimationInstancingMgr.Instance.AddBoundingSphere(this);
             AnimationInstancingMgr.Instance.AddInstance(gameObject);
         }
 
