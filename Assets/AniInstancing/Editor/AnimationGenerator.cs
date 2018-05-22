@@ -259,7 +259,8 @@ namespace AnimationInstancing
 							return c.name == clipName;
 						return false;
 					});
-                    int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 0;
+                    int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 1;
+					framesToBake = Mathf.Clamp(framesToBake, 1, framesToBake);
                     totalFrames += framesToBake;
                     frames.Add(framesToBake);
                 }
@@ -282,7 +283,8 @@ namespace AnimationInstancing
 							return c.name == clipName;
 						return false;
 					});
-                    int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 0;
+                    int framesToBake = clip ? (int)(clip.length * aniFps / 1.0f) : 1;
+					framesToBake = Mathf.Clamp(framesToBake, 1, framesToBake);
                     GUILayout.BeginHorizontal();
                     {
                         generateAnims[clipName] = EditorGUILayout.Toggle(string.Format("({0}) {1} ", framesToBake, clipName), generateAnims[clipName]);
@@ -551,6 +553,7 @@ namespace AnimationInstancing
                 bake.info.animationNameHash = state.state.nameHash;
                 bake.info.animationIndex = animationIndex;
                 bake.info.totalFrame = (int)(state.state.motion.averageDuration * bakeFPS);
+				bake.info.totalFrame = Mathf.Clamp(bake.info.totalFrame, 1, bake.info.totalFrame);
                 bake.info.fps = bakeFPS;
                 bake.info.rootMotion = true;
                 if (bake.info.rootMotion)
