@@ -76,8 +76,13 @@ namespace AnimationInstancing
             {
                 generateObjectData[i] = new GenerateOjbectInfo();
             }
+            EditorApplication.update += GenerateAnimation;
         }
 
+        void OnDisable()
+        {
+            EditorApplication.update -= GenerateAnimation;
+        }
         private void Reset()
         {
             pixelx = 0;
@@ -90,12 +95,13 @@ namespace AnimationInstancing
             currentDataIndex = 0;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            GenerateAnimation();
-        }
+        // void Update()
+        // {
+        //     GenerateAnimation();
+        // }
 
+        int count = 0;
+        float timer = 0.0f;
         void GenerateAnimation()
         {
             if (generateInfo.Count > 0 && workingInfo == null)
@@ -104,18 +110,37 @@ namespace AnimationInstancing
                 generateInfo.RemoveAt(0);
 
                 workingInfo.animator.gameObject.SetActive(true);
+                //workingInfo.animator.Update(workingInfo.length / workingInfo.info.totalFrame);
+                workingInfo.animator.Update(0);
                 workingInfo.animator.Play(workingInfo.info.animationNameHash);
+                workingInfo.animator.Update(0);
                 workingInfo.workingFrame = 0;
-                workingInfo.animator.Update(workingInfo.length / workingInfo.info.totalFrame);
+                
+
+                // workingInfo.animator.Rebind();
+                // workingInfo.animator.StopPlayback();
+                // workingInfo.animator.recorderStartTime = 0;
+                // workingInfo.animator.StartRecording(workingInfo.info.fps); 
+
+                // for (var j = 0; j < workingInfo.info.fps; j++)
+                // {
+                //     float delta = 1.0f/workingInfo.info.fps;
+                //     workingInfo.animator.Update(1.0f/workingInfo.info.fps);
+                // }
+                // workingInfo.animator.StopRecording();
+                // workingInfo.animator.StartPlayback();
+                // workingInfo.animator.playbackTime = 0;
+                // workingInfo.animator.Update(0);
+
+                timer = 0.0f;
+                count = 0;
                 return;
             }
             if (workingInfo != null)
             {
-                workingInfo.info.velocity[workingInfo.workingFrame] = workingInfo.animator.velocity;
-                workingInfo.info.angularVelocity[workingInfo.workingFrame] = workingInfo.animator.angularVelocity * Mathf.Rad2Deg;
-                float deltaTime = workingInfo.length / workingInfo.info.totalFrame;
-                workingInfo.animator.Update(deltaTime);
-
+                ++count;
+                float time = workingInfo.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                    Debug.Log("The time is" + time);
                 for (int j = 0; j != workingInfo.meshRender.Length; ++j)
                 {
                     GenerateBoneMatrix(workingInfo.meshRender[j].name.GetHashCode(),
@@ -124,13 +149,10 @@ namespace AnimationInstancing
                                             Matrix4x4.identity,
                                             false);
                 }
-
-                EditorUtility.DisplayProgressBar("Generating Animations",
-                    string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
-                    ((float)(generateCount - generateInfo.Count) / generateCount));
-				//Debug.Log(string.Format("Animation '{0}' is Generating. Current frame is {1}", workingInfo.info.animationName, workingInfo.workingFrame));
                 if (++workingInfo.workingFrame >= workingInfo.info.totalFrame)
                 {
+                    // float time2 = workingInfo.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                    // Debug.Log("The time2 is" + time2);
                     aniInfo.Add(workingInfo.info);
                     if (generateInfo.Count == 0)
                     {
@@ -157,7 +179,23 @@ namespace AnimationInstancing
                         workingInfo.animator.gameObject.transform.rotation = Quaternion.identity;
                     }
                     workingInfo = null;
+                    return;
                 }
+
+                workingInfo.info.velocity[workingInfo.workingFrame] = workingInfo.animator.velocity;
+                workingInfo.info.angularVelocity[workingInfo.workingFrame] = workingInfo.animator.angularVelocity * Mathf.Rad2Deg;
+                float deltaTime = workingInfo.length / (workingInfo.info.totalFrame - 1);
+                workingInfo.animator.Update(deltaTime);
+                // float deltaTime = workingInfo.length / workingInfo.animator.recorderStopTime;
+                // timer += deltaTime;
+                // workingInfo.animator.playbackTime = timer;
+                // workingInfo.animator.Update(deltaTime);
+                EditorUtility.DisplayProgressBar("Generating Animations",
+                    string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
+                    ((float)(generateCount - generateInfo.Count) / generateCount));
+				//Debug.Log(string.Format("Animation '{0}' is Generating. Current frame is {1}", workingInfo.info.animationName, workingInfo.workingFrame));
+                
+                
             }
         }
 
@@ -438,6 +476,7 @@ namespace AnimationInstancing
             if (generatedPrefab != null)
             {
                 generatedObject = Instantiate(generatedPrefab);
+                Selection.activeGameObject = generatedObject;
                 generatedObject.transform.position = Vector3.zero;
                 generatedObject.transform.rotation = Quaternion.identity;
                 Animator animator = generatedObject.GetComponentInChildren<Animator>();
@@ -525,12 +564,15 @@ namespace AnimationInstancing
             for (int i = 0; i != stateMachine.states.Length; ++i)
             {
                 ChildAnimatorState state = stateMachine.states[i];
+                AnimationClip clip = state.state.motion as AnimationClip;
                 bool needBake = false;
-                if (!generateAnims.TryGetValue(state.state.motion.name, out needBake))
+                if (clip == null)
+                    continue;
+                if (!generateAnims.TryGetValue(clip.name, out needBake))
                     continue;
                 foreach (var obj in generateInfo)
                 {
-                    if (obj.info.animationName == state.state.motion.name)
+                    if (obj.info.animationName == clip.name)
                     {
                         needBake = false;
                         break;
@@ -541,16 +583,16 @@ namespace AnimationInstancing
                     continue;
 
                 AnimationBakeInfo bake = new AnimationBakeInfo();
-                bake.length = state.state.motion.averageDuration;
+                bake.length = clip.averageDuration;
                 bake.animator = animator;
 				bake.animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 bake.meshRender = meshRender;
                 bake.layer = layer;
                 bake.info = new AnimationInfo();
-                bake.info.animationName = state.state.motion.name;
+                bake.info.animationName = clip.name;
                 bake.info.animationNameHash = state.state.nameHash;
                 bake.info.animationIndex = animationIndex;
-                bake.info.totalFrame = (int)(state.state.motion.averageDuration * bakeFPS);
+                bake.info.totalFrame = (int)(bake.length * bakeFPS + 0.5f) + 1;
                 bake.info.fps = bakeFPS;
                 bake.info.rootMotion = true;
                 if (bake.info.rootMotion)
@@ -563,7 +605,7 @@ namespace AnimationInstancing
                 totalFrame += bake.info.totalFrame;
 
                 bake.info.eventList = new List<AnimationEvent>();
-                AnimationClip clip = state.state.motion as AnimationClip;
+                //AnimationClip clip = state.state.motion as AnimationClip;
                 foreach (var evt in clip.events)
                 {
                     AnimationEvent aniEvent = new AnimationEvent();

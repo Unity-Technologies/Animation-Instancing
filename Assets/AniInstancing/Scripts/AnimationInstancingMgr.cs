@@ -48,6 +48,8 @@ namespace AnimationInstancing
         {
             public List<Matrix4x4[]>[] worldMatrix;
             public List<float[]>[] frameIndex;
+            public List<float[]>[] preFrameIndex;
+            public List<float[]>[] transitionProgress;
         }
 
         public class VertexCache
@@ -188,6 +190,8 @@ namespace AnimationInstancing
                                 PreparePackageMaterial(package, vertexCache, k);
 #endif
                                 package.propertyBlock.SetFloatArray("frameIndex", vertexCache.instanceData.frameIndex[k][i]);
+                                package.propertyBlock.SetFloatArray("preFrameIndex", vertexCache.instanceData.preFrameIndex[k][i]);
+                                package.propertyBlock.SetFloatArray("transitionProgress", vertexCache.instanceData.transitionProgress[k][i]);
                                 Graphics.DrawMeshInstanced(vertexCache.mesh,
                                     j,
                                     package.material[j],
@@ -201,6 +205,8 @@ namespace AnimationInstancing
                             else
                             {
                                 package.material[j].SetFloat("frameIndex", vertexCache.instanceData.frameIndex[k][i][0]);
+                                package.material[j].SetFloat("preFrameIndex", vertexCache.instanceData.preFrameIndex[k][i][0]);
+                                package.material[j].SetFloat("transitionProgress", vertexCache.instanceData.transitionProgress[k][i][0]);
                                 Graphics.DrawMesh(vertexCache.mesh,
                                     vertexCache.instanceData.worldMatrix[k][i][0],
                                     package.material[j],
@@ -417,13 +423,22 @@ namespace AnimationInstancing
                     arrayMat[count].m31 = worldMat.m31;
                     arrayMat[count].m32 = worldMat.m32;
                     arrayMat[count].m33 = worldMat.m33;
-                    float frameIndex = 0;
+                    float frameIndex = 0, preFrameIndex = -1;
                     if (instance.parentInstance != null)
+                    {
                         frameIndex = instance.parentInstance.aniInfo[instance.parentInstance.aniIndex].animationIndex + instance.parentInstance.curFrame;
+                        if (instance.parentInstance.preAniIndex >= 0)
+                            preFrameIndex = instance.parentInstance.aniInfo[instance.parentInstance.preAniIndex].animationIndex + instance.parentInstance.preAniFrame;
+                    }
                     else
+                    {
                         frameIndex = instance.aniInfo[instance.aniIndex].animationIndex + instance.curFrame;
-
+                        if (instance.preAniIndex >= 0)
+                            preFrameIndex = instance.aniInfo[instance.preAniIndex].animationIndex + instance.preAniFrame;
+                    }
                     data.frameIndex[aniTextureIndex][index][count] = frameIndex;
+                    data.preFrameIndex[aniTextureIndex][index][count] = preFrameIndex;
+                    data.transitionProgress[aniTextureIndex][index][count] = instance.transitionProgress;
                 }
 
                 
@@ -636,8 +651,12 @@ namespace AnimationInstancing
 
             Matrix4x4[] mat = new Matrix4x4[instancingPackageSize];
             float[] frameIndex = new float[instancingPackageSize];
+            float[] preFrameIndex = new float[instancingPackageSize];
+            float[] transitionProgress = new float[instancingPackageSize];
             data.worldMatrix[index].Add(mat);
             data.frameIndex[index].Add(frameIndex);
+            data.preFrameIndex[index].Add(preFrameIndex);
+            data.transitionProgress[index].Add(transitionProgress);
             return package;
         }
 
@@ -749,10 +768,14 @@ namespace AnimationInstancing
                 data = new InstanceData();
                 data.worldMatrix = new List<Matrix4x4[]>[packageCount];
                 data.frameIndex = new List<float[]>[packageCount];
+                data.preFrameIndex = new List<float[]>[packageCount];
+                data.transitionProgress = new List<float[]>[packageCount];
                 for (int i = 0; i != packageCount; ++i)
                 {
                     data.worldMatrix[i] = new List<Matrix4x4[]>();
                     data.frameIndex[i] = new List<float[]>();
+                    data.preFrameIndex[i] = new List<float[]>();
+                    data.transitionProgress[i] = new List<float[]>();
                 }
                 instanceDataPool.Add(instanceName, data);
             }

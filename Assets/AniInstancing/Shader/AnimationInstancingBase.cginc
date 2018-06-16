@@ -11,9 +11,13 @@ int _boneTextureHeight;
 
 #if (SHADER_TARGET < 30 || SHADER_API_GLES)
 uniform float frameIndex;
+uniform float preFrameIndex;
+uniform float transitionProgress;
 #else
 UNITY_INSTANCING_CBUFFER_START(Props)
+	UNITY_DEFINE_INSTANCED_PROP(float, preFrameIndex)
 	UNITY_DEFINE_INSTANCED_PROP(float, frameIndex)
+	UNITY_DEFINE_INSTANCED_PROP(float, transitionProgress)
 UNITY_INSTANCING_CBUFFER_END
 #endif
 
@@ -57,8 +61,12 @@ half4 skinning(inout appdata_full v)
 	half4 bone = half4(v.texcoord2.x, v.texcoord2.y, v.texcoord2.z, v.texcoord2.w);
 #if (SHADER_TARGET < 30 || SHADER_API_GLES)
 	float curFrame = frameIndex;
+	float preAniFrame = preFrameIndex;
+	float progress = transitionProgress;
 #else
 	float curFrame = UNITY_ACCESS_INSTANCED_PROP(frameIndex);
+	float preAniFrame = UNITY_ACCESS_INSTANCED_PROP(preFrameIndex);
+	float progress = UNITY_ACCESS_INSTANCED_PROP(transitionProgress);
 #endif
 
 	//float curFrame = UNITY_ACCESS_INSTANCED_PROP(frameIndex);
@@ -83,6 +91,13 @@ half4 skinning(inout appdata_full v)
 	half4 localPosPre = mul(v.vertex, localToWorldMatrixPre);
 	half4 localPosNext = mul(v.vertex, localToWorldMatrixNext);
 	half4 localPos = lerp(localPosPre, localPosNext, curFrame - preFrame);
+
+	if (preAniFrame >= 0.0f)
+	{
+		half4x4 localToWorldMatrixPreAni = loadMatFromTexture(preAniFrame, bone.x);
+		half4 localPosPreAni = mul(v.vertex, localToWorldMatrixPreAni);
+		localPos = lerp(localPosPreAni, localPos, progress);
+	}
 	return localPos;
 }
 
@@ -91,17 +106,26 @@ half4 skinningShadow(inout appdata_full v)
 	half4 bone = half4(v.texcoord2.x, v.texcoord2.y, v.texcoord2.z, v.texcoord2.w);
 #if (SHADER_TARGET < 30 || SHADER_API_GLES)
 	float curFrame = frameIndex;
+	float preAniFrame = preFrameIndex;
+	float progress = transitionProgress;
 #else
 	float curFrame = UNITY_ACCESS_INSTANCED_PROP(frameIndex);
+	float preAniFrame = UNITY_ACCESS_INSTANCED_PROP(preFrameIndex);
+	float progress = UNITY_ACCESS_INSTANCED_PROP(transitionProgress);
 #endif
 	int preFrame = curFrame;
 	int nextFrame = curFrame + 1.0f;
 	half4x4 localToWorldMatrixPre = loadMatFromTexture(preFrame, bone.x);
 	half4x4 localToWorldMatrixNext = loadMatFromTexture(nextFrame, bone.x);
-
 	half4 localPosPre = mul(v.vertex, localToWorldMatrixPre);
 	half4 localPosNext = mul(v.vertex, localToWorldMatrixNext);
 	half4 localPos = lerp(localPosPre, localPosNext, curFrame - preFrame);
+	if (preAniFrame >= 0.0f)
+	{
+		half4x4 localToWorldMatrixPreAni = loadMatFromTexture(preAniFrame, bone.x);
+		half4 localPosPreAni = mul(v.vertex, localToWorldMatrixPreAni);
+		localPos = lerp(localPosPreAni, localPos, progress);
+	}
 	//half4 localPos = v.vertex;
 	return localPos;
 }
