@@ -34,9 +34,19 @@ namespace AnimationInstancing
         [NonSerialized]
         public float curFrame;
         [NonSerialized]
+        public float preAniFrame;
+        [NonSerialized]
         public int aniIndex = -1;
         [NonSerialized]
+        public int preAniIndex = -1;
+        [NonSerialized]
         public int aniTextureIndex = -1;
+        int preAniTextureIndex = -1;
+        float transitionDuration = 0.0f;
+        bool isInTransition = false;
+        float transitionTimer = 0.0f;
+        [NonSerialized]
+        public float transitionProgress = 0.0f;
         //[NonSerialized]
         //public int packageIndex;
         private int eventIndex = -1;
@@ -310,20 +320,55 @@ namespace AnimationInstancing
                 return;
             }
 
+            transitionDuration = 0.0f;
+            transitionProgress = 1.0f;
+            isInTransition = false;
             Debug.Assert(animationIndex < aniInfo.Count);
             if (0 <= animationIndex && animationIndex < aniInfo.Count)
             {
+                preAniIndex = aniIndex;
                 aniIndex = animationIndex;
+                preAniFrame = (float)(int)(curFrame + 0.5f);
                 curFrame = 0.0f;
                 eventIndex = -1;
+                preAniTextureIndex = aniTextureIndex;
                 aniTextureIndex = aniInfo[aniIndex].textureIndex;
             }
+            else
+            {
+                Debug.LogWarning("The requested animation index is out of the count.");
+                return;
+            }
             RefreshAttachmentAnimation(animationIndex);
+        }
+
+        public void CrossFade(string animationName, float duration)
+        {
+            int hash = animationName.GetHashCode();
+            int index = FindAnimationInfo(hash);
+            CrossFade(index, duration);
+        }
+
+        public void CrossFade(int animationIndex, float duration)
+        {
+            PlayAnimation(animationIndex);
+            if (duration > 0.0f)
+            {
+                isInTransition = true;
+                transitionTimer = 0.0f;
+                transitionProgress = 0.0f;
+            }
+            else
+            {
+                transitionProgress = 1.0f;
+            }
+            transitionDuration = duration;
         }
 
         public void Stop()
         {
             aniIndex = -1;
+            preAniIndex = -1;
             eventIndex = -1;
             curFrame = 0.0f;
         }
@@ -347,11 +392,32 @@ namespace AnimationInstancing
             return null;
         }
 
+        public AnimationInfo GetPreAnimationInfo()
+        {
+            if (aniInfo != null && 0 <= preAniIndex && preAniIndex < aniInfo.Count)
+            {
+                return aniInfo[preAniIndex];
+            }
+            return null;
+        }
+
         public void UpdateAnimation()
         {
             if (aniInfo == null)
                 return;
 
+            if (isInTransition)
+            {
+                transitionTimer += Time.deltaTime;
+                float weight = transitionTimer / transitionDuration;
+                transitionProgress = Mathf.Min(weight, 1.0f);
+                if (transitionProgress >= 1.0f)
+                {
+                    isInTransition = false;
+                    preAniIndex = -1;
+                    preAniFrame = -1;
+                }
+            }
             curFrame += playSpeed * Time.deltaTime * aniInfo[aniIndex].fps;
             int totalFrame = aniInfo[aniIndex].totalFrame;
             if (loop)
