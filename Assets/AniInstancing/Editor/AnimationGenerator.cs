@@ -594,12 +594,8 @@ namespace AnimationInstancing
                 bake.info.animationName = clip.name;
                 bake.info.animationNameHash = state.state.nameHash;
                 bake.info.animationIndex = animationIndex;
-<<<<<<< HEAD
-                bake.info.totalFrame = (int)(state.state.motion.averageDuration * bakeFPS);
-				bake.info.totalFrame = Mathf.Clamp(bake.info.totalFrame, 1, bake.info.totalFrame);
-=======
                 bake.info.totalFrame = (int)(bake.length * bakeFPS + 0.5f) + 1;
->>>>>>> Feature_transitions
+                bake.info.totalFrame = Mathf.Clamp(bake.info.totalFrame, 1, bake.info.totalFrame);
                 bake.info.fps = bakeFPS;
                 bake.info.rootMotion = true;
                 if (bake.info.rootMotion)
