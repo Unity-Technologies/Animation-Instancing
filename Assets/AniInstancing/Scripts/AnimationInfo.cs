@@ -20,6 +20,7 @@ namespace AnimationInstancing
         public string objectParameter;
         public float time;
     }
+
     public class AnimationInfo
     {
         public string animationName;
@@ -29,6 +30,7 @@ namespace AnimationInstancing
         public int animationIndex;
         public int textureIndex;
         public bool rootMotion;
+        public WrapMode wrapMode;
         public Vector3[] velocity;
         public Vector3[] angularVelocity;
         public List<AnimationEvent> eventList; 

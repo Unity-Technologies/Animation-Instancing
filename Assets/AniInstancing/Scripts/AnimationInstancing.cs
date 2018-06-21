@@ -26,8 +26,16 @@ namespace AnimationInstancing
         public AnimationInstancing parentInstance { get; set; }
 
         public float playSpeed = 1.0f;
-        [NonSerialized]
-        public bool loop = true;
+        float speedParameter = 1.0f, cacheParameter = 1.0f;
+        WrapMode wrapMode;
+        public WrapMode Mode
+        {
+             get {return wrapMode;}
+             set {wrapMode = value;}
+        }
+        public bool IsLoop() { return Mode == WrapMode.Loop; }
+        public bool IsPause() { return speedParameter == 0.0f; }
+
         public bool applyRootMotion = false;
         [Range(1, 4)]
         public int bonePerVertex = 4;
@@ -333,6 +341,8 @@ namespace AnimationInstancing
                 eventIndex = -1;
                 preAniTextureIndex = aniTextureIndex;
                 aniTextureIndex = aniInfo[aniIndex].textureIndex;
+                wrapMode = aniInfo[aniIndex].wrapMode;
+                speedParameter = 1.0f;
             }
             else
             {
@@ -363,6 +373,17 @@ namespace AnimationInstancing
                 transitionProgress = 1.0f;
             }
             transitionDuration = duration;
+        }
+
+        public void Pause()
+        {
+            cacheParameter = speedParameter;
+            speedParameter = 0.0f;
+        }
+
+        public void Resume()
+        {
+            speedParameter = cacheParameter;
         }
 
         public void Stop()
@@ -403,7 +424,7 @@ namespace AnimationInstancing
 
         public void UpdateAnimation()
         {
-            if (aniInfo == null)
+            if (aniInfo == null || IsPause())
                 return;
 
             if (isInTransition)
@@ -418,15 +439,44 @@ namespace AnimationInstancing
                     preAniFrame = -1;
                 }
             }
-            curFrame += playSpeed * Time.deltaTime * aniInfo[aniIndex].fps;
+            float speed = playSpeed * speedParameter;
+            curFrame += speed * Time.deltaTime * aniInfo[aniIndex].fps;
             int totalFrame = aniInfo[aniIndex].totalFrame;
-            if (loop)
+            switch (wrapMode)
             {
-                if (curFrame < 0f)
-                    curFrame += (totalFrame - 1);
-                else if (curFrame > totalFrame - 1)
-                    curFrame -= (totalFrame - 1);
+                case WrapMode.Loop:
+                {
+                    if (curFrame < 0f)
+                        curFrame += (totalFrame - 1);
+                    else if (curFrame > totalFrame - 1)
+                        curFrame -= (totalFrame - 1);
+                    break;
+                }
+                case WrapMode.PingPong:
+                {
+                    if (curFrame < 0f)
+                    {
+                        speedParameter = Mathf.Abs(speedParameter);
+                        curFrame = Mathf.Abs(curFrame);
+                    }
+                    else if (curFrame > totalFrame - 1)
+                    {
+                        speedParameter = -Mathf.Abs(speedParameter);
+                        curFrame = 2 * (totalFrame - 1) - curFrame;
+                    }
+                    break;
+                }
+                case WrapMode.Default:
+                case WrapMode.Once:
+                {
+                    if (curFrame < 0f || curFrame > totalFrame - 1.0f)
+                    {
+                        Pause();
+                    }
+                    break;
+                }
             }
+
             curFrame = Mathf.Clamp(curFrame, 0f, totalFrame - 1);
 
             for (int i = 0; i != listAttachment.Count; ++i)

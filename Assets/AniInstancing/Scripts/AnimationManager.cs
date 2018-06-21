@@ -206,6 +206,7 @@ namespace AnimationInstancing
                 info.totalFrame = reader.ReadInt32();
                 info.fps = reader.ReadInt32();
                 info.rootMotion = reader.ReadBoolean();
+                info.wrapMode = (WrapMode)reader.ReadInt32();
                 if (info.rootMotion)
                 {
                     info.velocity = new Vector3[info.totalFrame];

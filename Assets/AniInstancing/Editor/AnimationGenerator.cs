@@ -110,27 +110,10 @@ namespace AnimationInstancing
                 generateInfo.RemoveAt(0);
 
                 workingInfo.animator.gameObject.SetActive(true);
-                //workingInfo.animator.Update(workingInfo.length / workingInfo.info.totalFrame);
                 workingInfo.animator.Update(0);
                 workingInfo.animator.Play(workingInfo.info.animationNameHash);
                 workingInfo.animator.Update(0);
                 workingInfo.workingFrame = 0;
-                
-
-                // workingInfo.animator.Rebind();
-                // workingInfo.animator.StopPlayback();
-                // workingInfo.animator.recorderStartTime = 0;
-                // workingInfo.animator.StartRecording(workingInfo.info.fps); 
-
-                // for (var j = 0; j < workingInfo.info.fps; j++)
-                // {
-                //     float delta = 1.0f/workingInfo.info.fps;
-                //     workingInfo.animator.Update(1.0f/workingInfo.info.fps);
-                // }
-                // workingInfo.animator.StopRecording();
-                // workingInfo.animator.StartPlayback();
-                // workingInfo.animator.playbackTime = 0;
-                // workingInfo.animator.Update(0);
 
                 timer = 0.0f;
                 count = 0;
@@ -151,8 +134,6 @@ namespace AnimationInstancing
                 }
                 if (++workingInfo.workingFrame >= workingInfo.info.totalFrame)
                 {
-                    // float time2 = workingInfo.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-                    // Debug.Log("The time2 is" + time2);
                     aniInfo.Add(workingInfo.info);
                     if (generateInfo.Count == 0)
                     {
@@ -598,6 +579,7 @@ namespace AnimationInstancing
                 bake.info.totalFrame = Mathf.Clamp(bake.info.totalFrame, 1, bake.info.totalFrame);
                 bake.info.fps = bakeFPS;
                 bake.info.rootMotion = true;
+                bake.info.wrapMode = clip.isLooping? WrapMode.Loop: clip.wrapMode;
                 if (bake.info.rootMotion)
                 {
                     bake.info.velocity = new Vector3[bake.info.totalFrame];
@@ -656,6 +638,7 @@ namespace AnimationInstancing
                 writer.Write(info.totalFrame);
                 writer.Write(info.fps);
                 writer.Write(info.rootMotion);
+                writer.Write((int)info.wrapMode);
                 if (info.rootMotion)
                 {
                     Debug.Assert(info.totalFrame == info.velocity.Length);
