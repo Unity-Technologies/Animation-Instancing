@@ -55,6 +55,8 @@ public class RandomCharacters : MonoBehaviour {
                 gameObject.SetActive(false);
                 return;
             }
+            if (instancing.IsPause())
+                instancing.PlayAnimation(0);
             if (Vector3.SqrMagnitude(TargetPosition - transform.position) > 25)
             {
 
@@ -75,6 +77,7 @@ public class RandomCharacters : MonoBehaviour {
                 {
                     instancing.PlayAnimation(UnityEngine.Random.Range(0, 2));
                     //instancing.PlayAnimation(1);
+                    //instancing.CrossFade(1, 0.1f);
                     TargetPosition = new Vector3(UnityEngine.Random.Range(-AvatarRange, AvatarRange), 0, UnityEngine.Random.Range(-AvatarRange, AvatarRange));
                     transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(TargetPosition - transform.position), 0.1f);
                     //gameObject.transform.rotation = Quaternion.LookRotation(TargetPosition - transform.position);

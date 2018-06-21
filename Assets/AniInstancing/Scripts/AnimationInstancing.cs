@@ -478,7 +478,6 @@ namespace AnimationInstancing
             }
 
             curFrame = Mathf.Clamp(curFrame, 0f, totalFrame - 1);
-
             for (int i = 0; i != listAttachment.Count; ++i)
             {
                 AnimationInstancing attachment = listAttachment[i];

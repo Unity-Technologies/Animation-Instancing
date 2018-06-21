@@ -95,13 +95,6 @@ namespace AnimationInstancing
             currentDataIndex = 0;
         }
 
-        // void Update()
-        // {
-        //     GenerateAnimation();
-        // }
-
-        int count = 0;
-        float timer = 0.0f;
         void GenerateAnimation()
         {
             if (generateInfo.Count > 0 && workingInfo == null)
@@ -112,18 +105,14 @@ namespace AnimationInstancing
                 workingInfo.animator.gameObject.SetActive(true);
                 workingInfo.animator.Update(0);
                 workingInfo.animator.Play(workingInfo.info.animationNameHash);
-                workingInfo.animator.Update(0);
+                workingInfo.animator.Update(1);
                 workingInfo.workingFrame = 0;
-
-                timer = 0.0f;
-                count = 0;
                 return;
             }
             if (workingInfo != null)
             {
-                ++count;
-                float time = workingInfo.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-                    Debug.Log("The time is" + time);
+                //float time = workingInfo.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+                //Debug.Log("The time is" + time);
                 for (int j = 0; j != workingInfo.meshRender.Length; ++j)
                 {
                     GenerateBoneMatrix(workingInfo.meshRender[j].name.GetHashCode(),
@@ -132,6 +121,10 @@ namespace AnimationInstancing
                                             Matrix4x4.identity,
                                             false);
                 }
+                //Debug.Log("The length is" + workingInfo.animator.velocity.magnitude);
+                workingInfo.info.velocity[workingInfo.workingFrame] = workingInfo.animator.velocity;
+                workingInfo.info.angularVelocity[workingInfo.workingFrame] = workingInfo.animator.angularVelocity * Mathf.Rad2Deg;
+
                 if (++workingInfo.workingFrame >= workingInfo.info.totalFrame)
                 {
                     aniInfo.Add(workingInfo.info);
@@ -162,15 +155,9 @@ namespace AnimationInstancing
                     workingInfo = null;
                     return;
                 }
-
-                workingInfo.info.velocity[workingInfo.workingFrame] = workingInfo.animator.velocity;
-                workingInfo.info.angularVelocity[workingInfo.workingFrame] = workingInfo.animator.angularVelocity * Mathf.Rad2Deg;
+                
                 float deltaTime = workingInfo.length / (workingInfo.info.totalFrame - 1);
                 workingInfo.animator.Update(deltaTime);
-                // float deltaTime = workingInfo.length / workingInfo.animator.recorderStopTime;
-                // timer += deltaTime;
-                // workingInfo.animator.playbackTime = timer;
-                // workingInfo.animator.Update(deltaTime);
                 EditorUtility.DisplayProgressBar("Generating Animations",
                     string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
                     ((float)(generateCount - generateInfo.Count) / generateCount));
