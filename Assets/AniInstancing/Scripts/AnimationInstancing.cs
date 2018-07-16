@@ -250,7 +250,7 @@ namespace AnimationInstancing
         public void Prepare(List<AnimationInfo> infoList, ExtraBoneInfo extraBoneInfo)
         {
             aniInfo = infoList;
-            extraBoneInfo = extraBoneInfo;
+            //extraBoneInfo = extraBoneInfo;
             List<Matrix4x4> bindPose = new List<Matrix4x4>(150);
             // to optimize, MergeBone don't need to call every time
             Transform[] bones = RuntimeHelper.MergeBone(lodInfo[0].skinnedMeshRenderer, bindPose);
