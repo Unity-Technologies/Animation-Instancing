@@ -63,7 +63,7 @@ namespace AnimationInstancing
         private ComparerHash comparer;
         private AnimationInfo searchInfo;
         private AnimationEvent aniEvent = null;
-
+        public List<int> materialIdentify = new List<int>();
         public class LodInfo
         {
             public int lodLevel;
@@ -80,6 +80,7 @@ namespace AnimationInstancing
         public int lodLevel;
         private Transform[] allTransforms;
         private bool isMeshRender = false;
+        [NonSerialized]
         private List<AnimationInstancing> listAttachment;
 
         void Start()
@@ -232,7 +233,8 @@ namespace AnimationInstancing
                     lodInfo,
                     null,
                     null,
-                    bonePerVertex);
+                    bonePerVertex,
+                    materialIdentify);
                 return true;
             }
 
@@ -280,7 +282,8 @@ namespace AnimationInstancing
                 lodInfo,
                 allTransforms,
                 bindPose,
-                bonePerVertex);
+                bonePerVertex,
+                materialIdentify);
 
             Destroy(GetComponent<Animator>());
             //Destroy(GetComponentInChildren<SkinnedMeshRenderer>());
@@ -595,6 +598,7 @@ namespace AnimationInstancing
                         null,
                         null,
                         attachment.bonePerVertex,
+                        materialIdentify,
                         boneName);
 
             for (int i = 0; i != attachment.lodInfo.Length; ++i)
