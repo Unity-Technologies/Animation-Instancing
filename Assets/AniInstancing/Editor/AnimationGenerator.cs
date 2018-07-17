@@ -105,7 +105,7 @@ namespace AnimationInstancing
                 workingInfo.animator.gameObject.SetActive(true);
                 workingInfo.animator.Update(0);
                 workingInfo.animator.Play(workingInfo.info.animationNameHash);
-                workingInfo.animator.Update(1);
+                workingInfo.animator.Update(0);
                 workingInfo.workingFrame = 0;
                 return;
             }

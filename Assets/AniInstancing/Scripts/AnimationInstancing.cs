@@ -338,7 +338,7 @@ namespace AnimationInstancing
             {
                 return;
             }
-            if (animationIndex == aniIndex)
+            if (animationIndex == aniIndex && !IsPause())
             {
                 return;
             }

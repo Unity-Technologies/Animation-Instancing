@@ -56,7 +56,8 @@ public class RandomCharacters : MonoBehaviour {
                 return;
             }
             if (instancing.IsPause())
-                instancing.PlayAnimation(0);
+                instancing.CrossFade(0, 0.2f);
+
             if (Vector3.SqrMagnitude(TargetPosition - transform.position) > 25)
             {
 
@@ -73,6 +74,7 @@ public class RandomCharacters : MonoBehaviour {
             }
             else
             {
+
                 //if (avatar.GetFloat("Speed") < 0.01f)
                 {
                     instancing.PlayAnimation(UnityEngine.Random.Range(0, 2));
