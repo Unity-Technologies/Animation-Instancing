@@ -79,7 +79,7 @@ namespace AnimationInstancing
             foreach (var obj in m_objs)
             {
                 GameObject gameObj = obj as GameObject;
-                DestroyObject(gameObj);
+                Destroy(gameObj);
             }
         }
 

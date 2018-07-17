@@ -24,8 +24,11 @@ namespace AnimationInstancing
         public BoundingSphere boundingSpere;
         public bool visible { get; set; }
         public AnimationInstancing parentInstance { get; set; }
-
         public float playSpeed = 1.0f;
+        public UnityEngine.Rendering.ShadowCastingMode shadowCastingMode;
+        public bool receiveShadow;
+        [NonSerialized]
+        public int layer;
         float speedParameter = 1.0f, cacheParameter = 1.0f;
         WrapMode wrapMode;
         public WrapMode Mode
@@ -55,15 +58,12 @@ namespace AnimationInstancing
         float transitionTimer = 0.0f;
         [NonSerialized]
         public float transitionProgress = 0.0f;
-        //[NonSerialized]
-        //public int packageIndex;
         private int eventIndex = -1;
 
         public List<AnimationInfo> aniInfo;
         private ComparerHash comparer;
         private AnimationInfo searchInfo;
         private AnimationEvent aniEvent = null;
-        public List<int> materialIdentify = new List<int>();
         public class LodInfo
         {
             public int lodLevel;
@@ -71,6 +71,7 @@ namespace AnimationInstancing
             public MeshRenderer[] meshRenderer;
             public MeshFilter[] meshFilter;
             public AnimationInstancingMgr.VertexCache[] vertexCacheList;
+            public AnimationInstancingMgr.MaterialBlock[] materialBlockList;
         }
         [NonSerialized]
         public LodInfo[] lodInfo;
@@ -95,6 +96,7 @@ namespace AnimationInstancing
             animator = GetComponent<Animator>();
             boundingSpere = new BoundingSphere(new Vector3(0, 0, 0), 1.0f);
             listAttachment = new List<AnimationInstancing>();
+            layer = gameObject.layer;
 
             switch (QualitySettings.blendWeights)
             {
@@ -122,6 +124,7 @@ namespace AnimationInstancing
                     LodInfo info = new LodInfo();
                     info.lodLevel = i;
                     info.vertexCacheList = new AnimationInstancingMgr.VertexCache[lods[i].renderers.Length];
+                    info.materialBlockList = new AnimationInstancingMgr.MaterialBlock[info.vertexCacheList.Length];
                     List<SkinnedMeshRenderer> listSkinnedMeshRenderer = new List<SkinnedMeshRenderer>();
                     List<MeshRenderer> listMeshRenderer = new List<MeshRenderer>();
                     foreach (var render in lods[i].renderers)
@@ -151,6 +154,7 @@ namespace AnimationInstancing
                 info.meshRenderer = GetComponentsInChildren<MeshRenderer>();
                 info.meshFilter = GetComponentsInChildren<MeshFilter>();
                 info.vertexCacheList = new AnimationInstancingMgr.VertexCache[info.skinnedMeshRenderer.Length + info.meshRenderer.Length];
+                info.materialBlockList = new AnimationInstancingMgr.MaterialBlock[info.vertexCacheList.Length];
                 lodInfo[0] = info;
 
                 for (int j = 0; j != info.meshRenderer.Length; ++j)
@@ -233,8 +237,7 @@ namespace AnimationInstancing
                     lodInfo,
                     null,
                     null,
-                    bonePerVertex,
-                    materialIdentify);
+                    bonePerVertex);
                 return true;
             }
 
@@ -282,8 +285,17 @@ namespace AnimationInstancing
                 lodInfo,
                 allTransforms,
                 bindPose,
-                bonePerVertex,
-                materialIdentify);
+                bonePerVertex);
+
+            foreach (var lod in lodInfo)
+            {
+                foreach (var cache in lod.vertexCacheList)
+                {
+                    cache.shadowcastingMode = shadowCastingMode;
+                    cache.receiveShadow = receiveShadow;
+                    cache.layer = layer;
+                }
+            }
 
             Destroy(GetComponent<Animator>());
             //Destroy(GetComponentInChildren<SkinnedMeshRenderer>());
@@ -598,7 +610,6 @@ namespace AnimationInstancing
                         null,
                         null,
                         attachment.bonePerVertex,
-                        materialIdentify,
                         boneName);
 
             for (int i = 0; i != attachment.lodInfo.Length; ++i)
