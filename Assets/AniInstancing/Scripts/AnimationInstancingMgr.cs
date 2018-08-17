@@ -365,6 +365,7 @@ namespace AnimationInstancing
                             PreparePackageMaterial(newPackage, cache, aniTextureIndex);
                             newPackage.instancingCount = 1;
                         }
+                        block.packageList[aniTextureIndex][packageIndex].instancingCount = 1;
                     }
                     else
                         ++package.instancingCount;
