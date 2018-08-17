@@ -370,7 +370,6 @@ namespace AnimationInstancing
                     else
                         ++package.instancingCount;
 
-                    if (j == 0)
                     {
                         VertexCache vertexCache = cache;
                         InstanceData data = block.instanceData;
