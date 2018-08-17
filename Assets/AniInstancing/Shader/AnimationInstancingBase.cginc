@@ -92,6 +92,13 @@ half4 skinning(inout appdata_full v)
 	half4 localPosNext = mul(v.vertex, localToWorldMatrixNext);
 	half4 localPos = lerp(localPosPre, localPosNext, curFrame - preFrame);
 
+	half3 localNormPre = mul(v.normal.xyz, (float3x3)localToWorldMatrixPre);
+	half3 localNormNext = mul(v.normal.xyz, (float3x3)localToWorldMatrixNext);
+	v.normal = normalize(lerp(localNormPre, localNormNext, curFrame - preFrame));
+	half3 localTanPre = mul(v.tangent.xyz, (float3x3)localToWorldMatrixPre);
+	half3 localTanNext = mul(v.tangent.xyz, (float3x3)localToWorldMatrixNext);
+	v.tangent.xyz = normalize(lerp(localTanPre, localTanNext, curFrame - preFrame));
+
 	if (preAniFrame >= 0.0f)
 	{
 		half4x4 localToWorldMatrixPreAni = loadMatFromTexture(preAniFrame, bone.x);
