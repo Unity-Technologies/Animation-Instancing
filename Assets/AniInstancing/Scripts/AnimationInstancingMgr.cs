@@ -396,22 +396,24 @@ namespace AnimationInstancing
                             arrayMat[count].m31 = worldMat.m31;
                             arrayMat[count].m32 = worldMat.m32;
                             arrayMat[count].m33 = worldMat.m33;
-                            float frameIndex = 0, preFrameIndex = -1;
+                            float frameIndex = 0, preFrameIndex = -1, transition = 0f;
                             if (instance.parentInstance != null)
                             {
                                 frameIndex = instance.parentInstance.aniInfo[instance.parentInstance.aniIndex].animationIndex + instance.parentInstance.curFrame;
                                 if (instance.parentInstance.preAniIndex >= 0)
                                     preFrameIndex = instance.parentInstance.aniInfo[instance.parentInstance.preAniIndex].animationIndex + instance.parentInstance.preAniFrame;
+                                transition = instance.parentInstance.transitionProgress;
                             }
                             else
                             {
                                 frameIndex = instance.aniInfo[instance.aniIndex].animationIndex + instance.curFrame;
                                 if (instance.preAniIndex >= 0)
                                     preFrameIndex = instance.aniInfo[instance.preAniIndex].animationIndex + instance.preAniFrame;
+                                transition = instance.transitionProgress;
                             }
                             data.frameIndex[aniTextureIndex][index][count] = frameIndex;
                             data.preFrameIndex[aniTextureIndex][index][count] = preFrameIndex;
-                            data.transitionProgress[aniTextureIndex][index][count] = instance.transitionProgress;
+                            data.transitionProgress[aniTextureIndex][index][count] = transition;
                         }
                     }
                 }
