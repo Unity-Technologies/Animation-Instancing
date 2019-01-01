@@ -578,14 +578,24 @@ namespace AnimationInstancing
                 Debug.LogError("Can't find the bone.");
                 return;
             }
+            if (attachment.lodInfo[0].meshRenderer.Length == 0 && attachment.lodInfo[0].skinnedMeshRenderer.Length == 0)
+            {
+                Debug.LogError("The attachment doesn't have a Renderer");
+                return;
+            }
 
             attachment.parentInstance = this;
-            
             AnimationInstancingMgr.VertexCache parentCache = AnimationInstancingMgr.Instance.FindVertexCache(lodInfo[0].skinnedMeshRenderer[0].name.GetHashCode());
             listAttachment.Add(attachment);
 
             int skinnedMeshRenderCount = attachment.lodInfo[0].skinnedMeshRenderer.Length;
-            int nameCode = attachment.lodInfo[0].meshRenderer[0].name.GetHashCode() + boneName.GetHashCode();
+            int nameCode = boneName.GetHashCode();
+            nameCode += attachment.lodInfo[0].meshRenderer.Length > 0? attachment.lodInfo[0].meshRenderer[0].name.GetHashCode(): 0;
+            if (attachment.lodInfo[0].meshRenderer.Length == 0)
+            {
+                //todo, to support the attachment that has skinnedMeshRenderer;
+                nameCode += attachment.lodInfo[0].skinnedMeshRenderer[0] != null? attachment.lodInfo[0].skinnedMeshRenderer[0].name.GetHashCode(): 0;
+            }
             AnimationInstancingMgr.VertexCache cache = AnimationInstancingMgr.Instance.FindVertexCache(nameCode);
             // if we can reuse the VertexCache, we don't need to create one
             if (cache != null && cache.boneTextureIndex >= 0 
@@ -626,7 +636,7 @@ namespace AnimationInstancing
                     }
                     Debug.Assert(cache.boneTextureIndex < 0 || cache.boneIndex[0].x != index);
 
-                    AnimationInstancingMgr.Instance.BindAttachment(parentCache, info.meshFilter[j].sharedMesh, index);
+                    AnimationInstancingMgr.Instance.BindAttachment(parentCache, cache, info.meshFilter[j].sharedMesh, index);
                     AnimationInstancingMgr.Instance.SetupAdditionalData(cache);
                     cache.boneTextureIndex = parentCache.boneTextureIndex;
                 }

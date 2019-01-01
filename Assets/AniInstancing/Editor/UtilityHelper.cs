@@ -42,9 +42,9 @@ namespace AnimationInstancing
             dst.boneMatrix = src.boneMatrix;
         }
 
-        public static Color[] Convert2Color(Matrix4x4[] boneMatrix, int boneCount)
+        public static Color[] Convert2Color(Matrix4x4[] boneMatrix)
         {
-            Color[] color = new Color[boneCount * 4];
+            Color[] color = new Color[boneMatrix.Length * 4];
             int index = 0;
             foreach (var obj in boneMatrix)
             {

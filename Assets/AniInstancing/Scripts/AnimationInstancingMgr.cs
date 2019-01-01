@@ -867,7 +867,8 @@ namespace AnimationInstancing
             }
             if (boneIndex >= 0)
             {
-                BindAttachment(vertexCache, vertexCache.mesh, boneIndex);
+                //todo
+                BindAttachment(vertexCache, vertexCache, vertexCache.mesh, boneIndex);
             }
             if (vertexCache.materials == null)
                 vertexCache.materials = render.sharedMaterials;
@@ -943,27 +944,27 @@ namespace AnimationInstancing
         }
 
 
-        public void BindAttachment(VertexCache cache, Mesh sharedMesh, int boneIndex)
+        public void BindAttachment(VertexCache parentCache, VertexCache attachmentCache, Mesh sharedMesh, int boneIndex)
         {
-            Matrix4x4 mat = cache.bindPose[boneIndex].inverse;
-            cache.mesh = Instantiate(sharedMesh);
+            Matrix4x4 mat = parentCache.bindPose[boneIndex].inverse;
+            attachmentCache.mesh = Instantiate(sharedMesh);
             Vector3 offset = mat.GetColumn(3);
             Quaternion q = RuntimeHelper.QuaternionFromMatrix(mat);
-            Vector3[] vertices = cache.mesh.vertices;
-            for (int k = 0; k != cache.mesh.vertexCount; ++k)
+            Vector3[] vertices = attachmentCache.mesh.vertices;
+            for (int k = 0; k != attachmentCache.mesh.vertexCount; ++k)
             {
                 vertices[k] = q * vertices[k];
                 vertices[k] = vertices[k] + offset;
             }
-            cache.mesh.vertices = vertices;
+            attachmentCache.mesh.vertices = vertices;
 
-            for (int j = 0; j != cache.mesh.vertexCount; ++j)
+            for (int j = 0; j != attachmentCache.mesh.vertexCount; ++j)
             {
-                cache.weight[j].x = 1.0f;
-                cache.weight[j].y = -0.1f;
-                cache.weight[j].z = -0.1f;
-                cache.weight[j].w = -0.1f;
-                cache.boneIndex[j].x = boneIndex;
+                attachmentCache.weight[j].x = 1.0f;
+                attachmentCache.weight[j].y = -0.1f;
+                attachmentCache.weight[j].z = -0.1f;
+                attachmentCache.weight[j].w = -0.1f;
+                attachmentCache.boneIndex[j].x = boneIndex;
             }
         }
     }

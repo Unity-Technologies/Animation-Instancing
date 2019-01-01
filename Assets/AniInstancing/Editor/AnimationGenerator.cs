@@ -158,9 +158,11 @@ namespace AnimationInstancing
                 
                 float deltaTime = workingInfo.length / (workingInfo.info.totalFrame - 1);
                 workingInfo.animator.Update(deltaTime);
-                EditorUtility.DisplayProgressBar("Generating Animations",
-                    string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
-                    ((float)(generateCount - generateInfo.Count) / generateCount));
+                // EditorUtility.DisplayProgressBar("Generating Animations",
+                //     string.Format("Animation '{0}' is Generating.", workingInfo.info.animationName),
+                //     ((float)(generateCount - generateInfo.Count) / generateCount));
+
+
 				//Debug.Log(string.Format("Animation '{0}' is Generating. Current frame is {1}", workingInfo.info.animationName, workingInfo.workingFrame));
                 
                 
@@ -204,35 +206,49 @@ namespace AnimationInstancing
                     showAttachmentSetting = EditorGUILayout.Foldout(showAttachmentSetting, "Attachment setting");
                     if (showAttachmentSetting)
                     {
-                        GameObject fbx = EditorGUILayout.ObjectField("   FBX", generatedFbx, typeof(GameObject), false) as GameObject;
-                        if (fbx != generatedFbx)
-                        {
-                            SkinnedMeshRenderer[] meshRender = generatedPrefab.GetComponentsInChildren<SkinnedMeshRenderer>();
-                            List<Matrix4x4> bindPose = new List<Matrix4x4>(150);
-                            boneTransform = RuntimeHelper.MergeBone(meshRender, bindPose);
+                        EditorGUI.BeginChangeCheck();
+                        GameObject fbx = EditorGUILayout.ObjectField("FBX refrenced by Prefab:", generatedFbx, typeof(GameObject), false) as GameObject;
+                        
 
-                            generatedFbx = fbx;
-                            var allTrans = generatedPrefab.GetComponentsInChildren<Transform>().ToList();
-                            allTrans.RemoveAll(q => boneTransform.Contains(q));
-                            selectExtraBone.Clear();
-                            for (int i = 0; i != allTrans.Count; ++i)
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            if (fbx != generatedFbx)
                             {
-                                selectExtraBone.Add(allTrans[i].name, false);
+                                SkinnedMeshRenderer[] meshRender = generatedPrefab.GetComponentsInChildren<SkinnedMeshRenderer>();
+                                List<Matrix4x4> bindPose = new List<Matrix4x4>(150);
+                                boneTransform = RuntimeHelper.MergeBone(meshRender, bindPose);
+
+                                generatedFbx = fbx;
+                                var allTrans = generatedPrefab.GetComponentsInChildren<Transform>().ToList();
+                                allTrans.RemoveAll(q => boneTransform.Contains(q));
+
+                                //var allTrans = boneTransform;
+                                selectExtraBone.Clear();
+                                for (int i = 0; i != allTrans.Count; ++i)
+                                {
+                                    selectExtraBone.Add(allTrans[i].name, false);
+                                }
+                            }
+                            else if (fbx == null)
+                            {
+                                selectExtraBone.Clear();
                             }
                         }
-
-                        var temp = new Dictionary<string, bool>();
-                        foreach (var obj in selectExtraBone)
+                        if (selectExtraBone.Count > 0)
                         {
-                            temp[obj.Key] = obj.Value;
+                            var temp = new Dictionary<string, bool>();
+                            foreach (var obj in selectExtraBone)
+                            {
+                                temp[obj.Key] = obj.Value;
+                            }
+                            scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2);
+                            foreach (var obj in temp)
+                            {
+                                bool value = EditorGUILayout.Toggle(string.Format("   {0}", obj.Key), obj.Value);
+                                selectExtraBone[obj.Key] = value;
+                            }
+                            GUILayout.EndScrollView();
                         }
-                        scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2);
-                        foreach (var obj in temp)
-                        {
-                            bool value = EditorGUILayout.Toggle(string.Format("   {0}", obj.Key), obj.Value);
-                            selectExtraBone[obj.Key] = value;
-                        }
-                        GUILayout.EndScrollView();
                     }
                 }
                 else
@@ -1021,7 +1037,7 @@ namespace AnimationInstancing
                 if (matrixData.boneMatrix != null)
                 {
                     Debug.Assert(pixely + textureBlockHeight <= bakedBoneTexture[bakedTextureIndex].height);
-                    Color[] color = UtilityHelper.Convert2Color(matrixData.boneMatrix, boneCount);
+                    Color[] color = UtilityHelper.Convert2Color(matrixData.boneMatrix);
                     bakedBoneTexture[bakedTextureIndex].SetPixels(pixelx, pixely, textureBlockWidth, textureBlockHeight, color);
                     matrixData.frameIndex = pixelx / textureBlockWidth + pixely / textureBlockHeight * bakedBoneTexture[bakedTextureIndex].width / textureBlockWidth;
                     pixelx += textureBlockWidth;
