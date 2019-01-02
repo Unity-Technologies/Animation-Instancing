@@ -13,3 +13,11 @@ As developers, we’re always aware of performance, both in terms of CPU and GPU
 > Note:
 Before running the example, you should select menu Custom Editor -> AssetBundle -> BuildAssetBundle to build asset bundle.
 
+# Attachments:
+There's a attachment scene. It shows how to use the attachments. 
+How to setup the object which hold the attachment?
+* Open the generator menu -> AnimationInstancing -> Animation Generator
+* Enable the attachment checkbox 
+* Selece the fbx which refrenced by the prefab
+* Enable the skeleton's name to generate
+* Press the Generate button.

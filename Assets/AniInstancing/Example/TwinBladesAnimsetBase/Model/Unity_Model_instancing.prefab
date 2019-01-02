@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 4683082814364984}
   - component: {fileID: 95179353350947630}
   - component: {fileID: 114583898038997980}
+  - component: {fileID: 114023156843901260}
   m_Layer: 0
   m_Name: Unity_Model_instancing
   m_TagString: Untagged
@@ -1438,8 +1439,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1095790121983962}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.9042525, y: -0.7795507, z: 8.502931}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4233133858823650}
@@ -1736,7 +1737,7 @@ Animator:
   m_GameObject: {fileID: 1095790121983962}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2433ca6d2fdaf5e49ac1b33d9fe2ffe0, type: 3}
-  m_Controller: {fileID: 9100000, guid: 8cfd1ccf7f68d4d2289674a1fc800efe, type: 2}
+  m_Controller: {fileID: 9100000, guid: e6e1b986a4a6b4e4e8e7cba19a227d9f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -1744,6 +1745,19 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114023156843901260
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095790121983962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f9083f381b054d9e8cc1b0d369c0833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attachment: {fileID: 0}
 --- !u!114 &114583898038997980
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1774,6 +1788,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
   m_Materials:
   - {fileID: 2100000, guid: e355724c136524ac7813422b884a6095, type: 2}
   - {fileID: 2100000, guid: e355724c136524ac7813422b884a6095, type: 2}

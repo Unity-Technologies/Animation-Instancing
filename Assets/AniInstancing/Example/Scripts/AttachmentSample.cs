@@ -17,15 +17,11 @@ public class AttachmentSample : MonoBehaviour
             {  
 				int count = instance.GetAnimationCount();
 				instance.PlayAnimation(Random.Range(0, count));
-				//instance.PlayAnimation(1);
                 AnimationInstancing.AnimationInstancing attachmentScript = attachment.GetComponent<AnimationInstancing.AnimationInstancing>();
 				instance.Attach("ik_hand_r", attachmentScript);
 
-				
+				// Deattach the attachment
 				// instance.Deattach(attachmentScript);
-				// instance.Attach("ik_hand_r", attachmentScript);
-				// instance.PlayAnimation(1);
-				
 			}						
 		}
 	}
