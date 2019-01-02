@@ -208,8 +208,6 @@ namespace AnimationInstancing
                     {
                         EditorGUI.BeginChangeCheck();
                         GameObject fbx = EditorGUILayout.ObjectField("FBX refrenced by Prefab:", generatedFbx, typeof(GameObject), false) as GameObject;
-                        
-
                         if (EditorGUI.EndChangeCheck())
                         {
                             if (fbx != generatedFbx)
