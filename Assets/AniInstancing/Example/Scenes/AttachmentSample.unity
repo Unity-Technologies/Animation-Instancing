@@ -113,23 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &26358643 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1095790121983962, guid: e2c02868cb9eb480bad792ded2a0540c,
-    type: 2}
-  m_PrefabInternal: {fileID: 651760962}
---- !u!114 &26358644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 26358643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f9083f381b054d9e8cc1b0d369c0833, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attachment: {fileID: 1190965429}
 --- !u!4 &26358646 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4683082814364984, guid: e2c02868cb9eb480bad792ded2a0540c,
@@ -308,7 +291,8 @@ Prefab:
       propertyPath: m_Name
       value: Unity_Model_instancing
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114023156843901260, guid: e2c02868cb9eb480bad792ded2a0540c, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: e2c02868cb9eb480bad792ded2a0540c, type: 2}
   m_IsPrefabParent: 0
 --- !u!1001 &380299642
@@ -419,11 +403,11 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 95179353350947630, guid: e2c02868cb9eb480bad792ded2a0540c,
+    - target: {fileID: 114023156843901260, guid: e2c02868cb9eb480bad792ded2a0540c,
         type: 2}
-      propertyPath: m_Controller
+      propertyPath: attachment
       value: 
-      objectReference: {fileID: 9100000, guid: e6e1b986a4a6b4e4e8e7cba19a227d9f, type: 2}
+      objectReference: {fileID: 1190965429}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e2c02868cb9eb480bad792ded2a0540c, type: 2}
   m_IsPrefabParent: 0
@@ -577,7 +561,8 @@ Prefab:
       propertyPath: m_Name
       value: Unity_Model_instancing
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114023156843901260, guid: e2c02868cb9eb480bad792ded2a0540c, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: e2c02868cb9eb480bad792ded2a0540c, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &927143403
