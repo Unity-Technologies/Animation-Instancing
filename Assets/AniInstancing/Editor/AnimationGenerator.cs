@@ -291,9 +291,9 @@ namespace AnimationInstancing
                 if (textureCount == 0)
                     EditorGUILayout.LabelField("Error: There is certain animation's frames which is larger than a whole texture.");
                 else if (textureCount == 1)
-                    EditorGUILayout.LabelField(string.Format("Animation Texture wiil be one {0} X {1} texture", textureWidth, textureWidth));
+                    EditorGUILayout.LabelField(string.Format("Animation Texture will be one {0} X {1} texture", textureWidth, textureWidth));
                 else
-                    EditorGUILayout.LabelField(string.Format("Animation Texture wiil be {2} 1024 X 1024 and one {0} X {1} textures", textureWidth, textureWidth, textureCount - 1));
+                    EditorGUILayout.LabelField(string.Format("Animation Texture will be {2} 1024 X 1024 and one {0} X {1} textures", textureWidth, textureWidth, textureCount - 1));
 
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition);
                 foreach (var clipName in clipNames)
