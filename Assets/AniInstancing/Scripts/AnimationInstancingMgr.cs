@@ -936,7 +936,10 @@ namespace AnimationInstancing
             if (evt.hasBecomeVisible)
             {
                 Debug.Assert(evt.index < aniInstancingList.Count);
-                aniInstancingList[evt.index].visible = true;
+                if (aniInstancingList[evt.index].isActiveAndEnabled)
+                {
+                    aniInstancingList[evt.index].visible = true;
+                }
             }
             if (evt.hasBecomeInvisible)
             {
