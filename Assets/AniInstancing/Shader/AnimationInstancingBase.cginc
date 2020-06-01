@@ -95,7 +95,7 @@ half4 skinning(inout appdata_full v)
 
 	half4x4 localToWorldMatrixPreAni = loadMatFromTexture(preAniFrame, bone.x);
 	half4 localPosPreAni = mul(v.vertex, localToWorldMatrixPreAni);
-	localPos = lerp(localPos, localPosPreAni, (1.0f - progress) * (preAniFrame < 0.0f));
+	localPos = lerp(localPos, localPosPreAni, (1.0f - progress) * (preAniFrame > 0.0f));
 	return localPos;
 }
 
@@ -120,7 +120,7 @@ half4 skinningShadow(inout appdata_full v)
 	half4 localPos = lerp(localPosPre, localPosNext, curFrame - preFrame);
 	half4x4 localToWorldMatrixPreAni = loadMatFromTexture(preAniFrame, bone.x);
 	half4 localPosPreAni = mul(v.vertex, localToWorldMatrixPreAni);
-	localPos = lerp(localPos, localPosPreAni, (1.0f - progress) * (preAniFrame < 0.0f));
+	localPos = lerp(localPos, localPosPreAni, (1.0f - progress) * (preAniFrame > 0.0f));
 	//half4 localPos = v.vertex;
 	return localPos;
 }
