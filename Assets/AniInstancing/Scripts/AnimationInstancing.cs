@@ -597,12 +597,6 @@ namespace AnimationInstancing
                 nameCode += skinnedMeshRenderCount > 0? attachment.lodInfo[0].skinnedMeshRenderer[0].name.GetHashCode(): 0;
             }
             AnimationInstancingMgr.VertexCache cache = AnimationInstancingMgr.Instance.FindVertexCache(nameCode);
-            // if we can reuse the VertexCache, we don't need to create one
-            if (cache != null)
-            {
-                cache.boneTextureIndex = parentCache.boneTextureIndex;
-                return;
-            }
 
 			AnimationInstancingMgr.Instance.AddMeshVertex(attachment.prototype.name,
                         attachment.lodInfo,
@@ -610,6 +604,12 @@ namespace AnimationInstancing
                         null,
                         attachment.bonePerVertex,
                         boneName);
+            // if we can reuse the VertexCache, we don't need to create one
+            if (cache != null) 
+            {
+                cache.boneTextureIndex = parentCache.boneTextureIndex;
+                return;
+            }
 
             for (int i = 0; i != attachment.lodInfo.Length; ++i)
             {
