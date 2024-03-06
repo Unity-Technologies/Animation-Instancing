@@ -125,6 +125,32 @@ half4 skinningShadow(inout appdata_full v)
 	return localPos;
 }
 
+half4 skinningShadowSimplified(inout appdata_full v)
+{
+	half4 bone = half4(v.texcoord2.x, v.texcoord2.y, v.texcoord2.z, v.texcoord2.w);
+
+	float curFrame = UNITY_ACCESS_INSTANCED_PROP(frameIndex_arr, frameIndex);
+	
+	int nextFrame = curFrame + 1.0f;
+
+	// 从纹理中加载当前帧的骨骼变换矩阵
+	half4x4 localToWorldMatrixCur = loadMatFromTexture(curFrame, bone.x);
+	
+	// 从纹理中加载下一帧的骨骼变换矩阵
+	half4x4 localToWorldMatrixNext = loadMatFromTexture(nextFrame, bone.x);
+	
+	// 使用当前帧的骨骼变换矩阵计算顶点的位置
+	half4 localPosCur = mul(v.vertex, localToWorldMatrixCur);
+	
+	// 使用下一帧的骨骼变换矩阵计算顶点的位置
+	half4 localPosNext = mul(v.vertex, localToWorldMatrixNext);
+	
+	// 根据当前帧和下一帧的时间差，对当前帧和下一帧的顶点位置进行线性插值，得到当前帧的顶点位置
+	half4 localPos = lerp(localPosCur, localPosNext, frac(curFrame));
+
+	return localPos;
+}
+
 void vert(inout appdata_full v)
 {
 #ifdef UNITY_PASS_SHADOWCASTER
